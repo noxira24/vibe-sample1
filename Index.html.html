@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seoul Taste - 서울의 숨은 맛집</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 0.5rem 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* 히어로 섹션 */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%231a1a1a" width="1200" height="600"/><g fill-opacity="0.1"><polygon fill="%23333" points="1200 0 0 0 0 600"/><polygon fill="%23444" points="1200 600 600 300 0 600"/></g></svg>');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 2px solid #444;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.1);
+            border-color: #666;
+        }
+
+        /* 섹션 공통 스타일 */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #ffffff;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #444 0%, #666 100%);
+            border-radius: 2px;
+        }
+
+        /* 특징 섹션 */
+        .features {
+            background: #0f0f0f;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            transform: translateY(30px);
+            border: 1px solid #2d2d2d;
+        }
+
+        .feature-card.visible {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(255,255,255,0.05);
+            border-color: #444;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        /* 맛집 갤러리 */
+        .restaurants {
+            background: #0a0a0a;
+        }
+
+        .restaurant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .restaurant-card {
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            transform: translateY(30px);
+            border: 1px solid #2d2d2d;
+        }
+
+        .restaurant-card.visible {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.05);
+            border-color: #444;
+        }
+
+        .restaurant-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+        }
+
+        .restaurant-info {
+            padding: 1.5rem;
+        }
+
+        .restaurant-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .restaurant-info .category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #2d2d2d;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+            margin-bottom: 0.8rem;
+        }
+
+        .restaurant-info p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .rating {
+            color: #ffa500;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        /* 후기 섹션 */
+        .reviews {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+        }
+
+        .reviews .section-title {
+            color: white;
+        }
+
+        .reviews .section-title::after {
+            background: linear-gradient(135deg, #444 0%, #666 100%);
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .review-card {
+            background: rgba(0,0,0,0.4);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .review-card.visible {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .review-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .reviewer {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* 푸터 */
+        footer {
+            background: #0a0a0a;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid #2d2d2d;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.2);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                right: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 2rem 0;
+                border-top: 1px solid #444;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 3rem 1rem;
+            }
+        }
+
+        /* 스크롤 애니메이션 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header id="header">
+        <nav>
+            <div class="logo">🍜 Seoul Taste</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">홈</a></li>
+                <li><a href="#features">특징</a></li>
+                <li><a href="#restaurants">맛집</a></li>
+                <li><a href="#reviews">후기</a></li>
+            </ul>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 히어로 섹션 -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>서울의 숨은 맛집을 발견하세요</h1>
+            <p>현지인만 아는 진짜 맛집, 검증된 리뷰와 함께 소개합니다</p>
+            <a href="#restaurants" class="cta-button">맛집 둘러보기</a>
+        </div>
+    </section>
+
+    <!-- 특징 섹션 -->
+    <section class="features" id="features">
+        <h2 class="section-title">왜 Seoul Taste인가요?</h2>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🔍</div>
+                <h3>엄선된 맛집</h3>
+                <p>현지인과 전문가가 직접 방문하고 검증한 맛집만 소개합니다.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">⭐</div>
+                <h3>신뢰할 수 있는 리뷰</h3>
+                <p>실제 방문 후기와 평점으로 믿을 수 있는 정보를 제공합니다.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">📍</div>
+                <h3>지역별 추천</h3>
+                <p>서울 각 지역의 특색 있는 맛집을 쉽게 찾을 수 있습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 맛집 갤러리 -->
+    <section class="restaurants" id="restaurants">
+        <h2 class="section-title">추천 맛집</h2>
+        <div class="restaurant-grid">
+            <div class="restaurant-card fade-in">
+                <div class="restaurant-image">🍜</div>
+                <div class="restaurant-info">
+                    <h3>한옥마을 국수집</h3>
+                    <span class="category">한식 · 면요리</span>
+                    <p>50년 전통의 손칼국수 전문점. 직접 뽑은 면발과 깊은 육수가 일품입니다.</p>
+                    <div class="rating">⭐⭐⭐⭐⭐ 4.8</div>
+                </div>
+            </div>
+            <div class="restaurant-card fade-in">
+                <div class="restaurant-image">🍕</div>
+                <div class="restaurant-info">
+                    <h3>이태리 정원</h3>
+                    <span class="category">양식 · 이탈리안</span>
+                    <p>정통 나폴리 피자를 맛볼 수 있는 감각적인 레스토랑입니다.</p>
+                    <div class="rating">⭐⭐⭐⭐⭐ 4.9</div>
+                </div>
+            </div>
+            <div class="restaurant-card fade-in">
+                <div class="restaurant-image">🍱</div>
+                <div class="restaurant-info">
+                    <h3>스시 장인</h3>
+                    <span class="category">일식 · 스시</span>
+                    <p>매일 아침 공수한 신선한 재료로 만드는 오마카세 전문점입니다.</p>
+                    <div class="rating">⭐⭐⭐⭐⭐ 4.7</div>
+                </div>
+            </div>
+            <div class="restaurant-card fade-in">
+                <div class="restaurant-image">☕</div>
+                <div class="restaurant-info">
+                    <h3>빈티지 카페</h3>
+                    <span class="category">카페 · 디저트</span>
+                    <p>감성 가득한 인테리어와 수제 디저트가 매력적인 카페입니다.</p>
+                    <div class="rating">⭐⭐⭐⭐ 4.6</div>
+                </div>
+            </div>
+            <div class="restaurant-card fade-in">
+                <div class="restaurant-image">🥘</div>
+                <div class="restaurant-info">
+                    <h3>매콤한 세상</h3>
+                    <span class="category">한식 · 찌개</span>
+                    <p>얼얼한 맛이 중독되는 김치찌개와 된장찌개 전문점입니다.</p>
+                    <div class="rating">⭐⭐⭐⭐⭐ 4.8</div>
+                </div>
+            </div>
+            <div class="restaurant-card fade-in">
+                <div class="restaurant-image">🍔</div>
+                <div class="restaurant-info">
+                    <h3>버거 하우스</h3>
+                    <span class="category">양식 · 버거</span>
+                    <p>수제 패티와 신선한 야채로 만든 프리미엄 버거 전문점입니다.</p>
+                    <div class="rating">⭐⭐⭐⭐ 4.5</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 후기 섹션 -->
+    <section class="reviews" id="reviews">
+        <h2 class="section-title">이용자 후기</h2>
+        <div class="review-grid">
+            <div class="review-card fade-in">
+                <p class="review-text">"Seoul Taste 덕분에 숨은 맛집들을 많이 발견했어요. 리뷰가 정말 정확해서 믿고 갑니다!"</p>
+                <p class="reviewer">- 김민지</p>
+            </div>
+            <div class="review-card fade-in">
+                <p class="review-text">"지역별로 맛집을 찾기 쉬워서 좋아요. 데이트 코스 짤 때 항상 참고합니다."</p>
+                <p class="reviewer">- 박준호</p>
+            </div>
+            <div class="review-card fade-in">
+                <p class="review-text">"회식 장소 찾을 때 정말 유용해요. 동료들 모두 만족했습니다!"</p>
+                <p class="reviewer">- 이서연</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer>
+        <p>&copy; 2024 Seoul Taste. All rights reserved.</p>
+        <div class="social-links">
+            <a href="#" title="Instagram">📷</a>
+            <a href="#" title="Facebook">👍</a>
+            <a href="#" title="Twitter">🐦</a>
+        </div>
+    </footer>
+
+    <script>
+        // 모바일 메뉴 토글
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // 메뉴 링크 클릭시 메뉴 닫기
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // 스크롤시 헤더 스타일 변경
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // 부드러운 스크롤
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerHeight = header.offsetHeight;
+                    const targetPosition = target.offsetTop - headerHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // 모든 애니메이션 대상 요소 관찰
+        document.querySelectorAll('.fade-in, .feature-card, .restaurant-card, .review-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 페이지 로드시 첫 화면 애니메이션
+        window.addEventListener('load', () => {
+            document.querySelector('.hero-content').style.opacity = '1';
+            document.querySelector('.hero-content').style.transform = 'translateY(0)';
+        });
+    </script>
+</body>
+</html>
